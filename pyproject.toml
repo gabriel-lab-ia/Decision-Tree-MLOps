@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fraud-decision-tree-mlops"
-version = "0.1.0"
+version = "0.2.0"
 description = "Decision Tree fraud detection system with MLflow tracking, MongoDB telemetry, FastAPI inference, CI/CD, and continuous ML lifecycle."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -47,7 +47,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 addopts = "-ra --strict-markers"
 
 [tool.ruff]

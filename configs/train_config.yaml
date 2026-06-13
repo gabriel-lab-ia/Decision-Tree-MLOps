@@ -1,6 +1,6 @@
 project:
   name: fraud-decision-tree-mlops
-  version: 0.1.0
+  version: 0.2.0
 
 data:
   sample_path: data/sample/synthetic_fraud.csv

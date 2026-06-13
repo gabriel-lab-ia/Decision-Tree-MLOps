@@ -58,6 +58,35 @@ curl -X POST http://localhost:8000/predict \
 Each telemetry event stores request features, prediction, risk score, model identity,
 and a UTC timestamp. Start the complete local stack with `make docker-up`.
 
+## v0.2.0 Observability and Demo Workflow
+
+Train and validate the model, then start the API:
+
+```bash
+make train
+make validate
+make api
+```
+
+In another terminal, exercise inference and observability:
+
+```bash
+make demo
+make telemetry-smoke
+make monitoring-summary
+make explain
+```
+
+`make demo` sends low-, medium-, and high-risk transactions and validates every API
+response. `make telemetry-smoke` confirms recent events when MongoDB is available and
+exits cleanly when telemetry is unavailable. `make monitoring-summary` reports total
+predictions, fraud rate, and average risk. `make explain` prints Decision Tree feature
+importances and requires `make train` first.
+
+For API plus MongoDB, use `docker compose up --build`, then run the demo commands in a
+second terminal. Prediction telemetry remains fail-soft: MongoDB downtime never blocks
+inference. Generated datasets, models, metrics, and MLflow state remain ignored.
+
 ## Model Lifecycle
 
 `make train` generates synthetic raw data when needed, persists a processed dataset,
@@ -83,6 +112,8 @@ Source, tests, configs, docs, diagrams, workflows, and `uv.lock` remain tracked.
 | `make test` | Run unit, integration, and contract tests |
 | `make train` / `make validate` | Train and validate the baseline |
 | `make api` / `make mlflow` | Run API or MLflow UI |
+| `make demo` / `make telemetry-smoke` | Exercise inference and telemetry |
+| `make monitoring-summary` / `make explain` | Inspect operations and model importance |
 | `make docker-up` / `make docker-down` | Manage the local service stack |
 
 ## Project Layout
@@ -105,5 +136,8 @@ src/fraud_detection/
 - [Telemetry](docs/telemetry.md)
 - [Model card](docs/model_card.md)
 - [Limitations](docs/limitations.md)
+- [Demo workflow](docs/demo_workflow.md)
+- [Monitoring](docs/monitoring.md)
+- [Model explainability](docs/model_explainability.md)
 
 Licensed under the [MIT License](LICENSE).
