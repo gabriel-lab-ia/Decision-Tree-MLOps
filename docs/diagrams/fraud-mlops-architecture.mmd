@@ -1,0 +1,48 @@
+flowchart LR
+    subgraph DEV[Development and Versioning]
+        A[Linux OS]
+        B[VS Code]
+        C[uv + .venv]
+        D[Git]
+        E[GitHub Repository]
+        F[GitHub Actions]
+        A --> B --> C --> D --> E --> F
+    end
+
+    subgraph ML[Machine Learning Lifecycle]
+        G[Synthetic Fraud Dataset]
+        H[Data Validation]
+        I[Feature Engineering]
+        J[Decision Tree Training]
+        K[Model Evaluation]
+        L[Model Validation]
+        M[Model Artifact]
+        G --> H --> I --> J --> K --> L --> M
+    end
+
+    subgraph TRACK[Experiment Tracking]
+        N[MLflow Tracking]
+        O[SQLite Backend Store]
+        P[MLflow Artifacts]
+        J --> N
+        N --> O
+        N --> P
+    end
+
+    subgraph APP[Serving Layer]
+        Q[API Consumer]
+        R[FastAPI]
+        S[Prediction Engine]
+        T[Fraud Prediction Response]
+        Q --> R --> S --> T
+        M -. loaded by .-> S
+    end
+
+    subgraph OBS[Telemetry and Monitoring]
+        U[MongoDB Telemetry]
+        V[Monitoring Reports]
+        T --> U --> V
+    end
+
+    F -. validates .-> ML
+    F -. builds .-> APP
