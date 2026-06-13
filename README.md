@@ -4,3 +4,6 @@
 </p>
 
 
+## Documentation
+
+- [Data Architecture](docs/data_architecture.md)
