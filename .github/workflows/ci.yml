@@ -10,6 +10,6 @@ jobs:
           python-version: "3.11"
           enable-cache: true
       - run: uv sync --frozen --extra dev
-      - run: uv run ruff check src tests
-      - run: uv run black --check src tests
+      - run: uv run ruff check src tests scripts/demo_predict.py scripts/telemetry_smoke_check.py scripts/run_monitoring_summary.py scripts/export_model_explainability.py
+      - run: uv run black --check src tests scripts/demo_predict.py scripts/telemetry_smoke_check.py scripts/run_monitoring_summary.py scripts/export_model_explainability.py
       - run: uv run pytest

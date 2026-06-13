@@ -1,4 +1,6 @@
-.PHONY: help venv install lint format test train api validate docker-up docker-down mlflow clean
+OBSERVABILITY_SCRIPTS = scripts/demo_predict.py scripts/telemetry_smoke_check.py scripts/run_monitoring_summary.py scripts/export_model_explainability.py
+
+.PHONY: help venv install lint format test train api validate demo telemetry-smoke monitoring-summary explain docker-up docker-down mlflow clean
 
 help:
 	@echo "Available commands:"
@@ -10,6 +12,10 @@ help:
 	@echo "  make train       - Train model"
 	@echo "  make validate    - Validate model metrics"
 	@echo "  make api         - Run FastAPI app"
+	@echo "  make demo        - Send demo transactions to the API"
+	@echo "  make telemetry-smoke - Check recent telemetry fail-soft behavior"
+	@echo "  make monitoring-summary - Print MongoDB monitoring summary"
+	@echo "  make explain     - Print Decision Tree feature importances"
 	@echo "  make docker-up   - Start Docker Compose services"
 	@echo "  make docker-down - Stop Docker Compose services"
 	@echo "  make mlflow      - Run MLflow UI"
@@ -21,12 +27,12 @@ install:
 	uv pip install -e ".[dev]"
 
 lint:
-	uv run ruff check src tests
-	uv run black --check src tests
+	uv run ruff check src tests $(OBSERVABILITY_SCRIPTS)
+	uv run black --check src tests $(OBSERVABILITY_SCRIPTS)
 
 format:
-	uv run ruff check src tests --fix
-	uv run black src tests
+	uv run ruff check src tests $(OBSERVABILITY_SCRIPTS) --fix
+	uv run black src tests $(OBSERVABILITY_SCRIPTS)
 
 test:
 	uv run pytest
@@ -39,6 +45,18 @@ api:
 
 validate:
 	uv run python scripts/validate_model.py
+
+demo:
+	uv run python scripts/demo_predict.py
+
+telemetry-smoke:
+	uv run python scripts/telemetry_smoke_check.py
+
+monitoring-summary:
+	uv run python scripts/run_monitoring_summary.py
+
+explain:
+	uv run python scripts/export_model_explainability.py
 
 docker-up:
 	docker compose up --build
