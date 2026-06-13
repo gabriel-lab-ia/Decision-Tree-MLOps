@@ -1,6 +1,5 @@
 # Data Architecture
-
-This project uses a layered data architecture to keep machine learning training code separated from data access, data cleaning, preprocessing, and feature engineering responsibilities.
+This project uses a layered data architecture to keep machine learning training code separated from data access, data cleaning, preprocessing, validation, feature engineering, and model training responsibilities.
 
 ## Data Flow
 
@@ -20,48 +19,88 @@ Processed Dataset
 Decision Tree Training
         ↓
 MLflow Tracking + Model Artifact
+```
 
-Layers
-Raw Transaction Data
+## Layers
+
+### Raw Transaction Data
 
 The raw dataset contains transaction-level fraud detection signals such as transaction amount, transaction hour, customer age, transaction history, merchant risk score, device risk score, and the fraud target label.
 
-TransactionDataRepository
+### TransactionDataRepository
 
-TransactionDataRepository acts as a DAO-style boundary for data access. It is responsible for loading raw data, generating the synthetic baseline dataset when needed, saving processed datasets, loading processed datasets, and validating raw transaction data through a dedicated interface.
+`TransactionDataRepository` acts as a DAO-style boundary for data access.
+
+It is responsible for:
+
+* Loading raw data
+* Generating the synthetic baseline dataset when needed
+* Saving processed datasets
+* Loading processed datasets
+* Validating raw transaction data through a dedicated interface
 
 This keeps training code from being directly coupled to file paths, CSV loading, or persistence details.
 
-Data Cleaning
+### Data Cleaning
 
-The cleaning layer handles data quality issues before model training. It removes duplicate rows, coerces numeric columns, handles missing values, removes invalid ranges, and ensures that downstream preprocessing receives stable tabular data.
+The cleaning layer handles data quality issues before model training.
 
-Examples of invalid ranges include negative transaction amounts, invalid transaction hours, negative customer age, negative transaction history, and risk scores outside the 0 to 1 interval.
+It is responsible for:
 
-Schema Validation
+* Removing duplicate rows
+* Coercing numeric columns
+* Handling missing values
+* Removing invalid ranges
+* Producing stable tabular data for downstream preprocessing
 
-Validation checks whether the cleaned dataset contains the required training columns, valid target labels, and no unacceptable missing values. This protects the model pipeline from silently training on malformed data.
+Examples of invalid ranges include:
 
-Feature Engineering
+* Negative transaction amounts
+* Invalid transaction hours
+* Negative customer age
+* Negative transaction history
+* Risk scores outside the `0` to `1` interval
 
-Feature engineering transforms raw transaction fields into fraud-oriented model signals, including night transaction flags, new customer flags, low transaction history indicators, high amount transaction indicators, and combined merchant/device risk scores.
+### Schema Validation
 
-Processed Dataset
+Validation checks whether the cleaned dataset contains the required training columns, valid target labels, and no unacceptable missing values.
 
-After cleaning, validation, and feature engineering, the processed dataset is saved as a reproducible local artifact. This gives the training pipeline a clear separation between raw data and model-ready data.
+This protects the model pipeline from silently training on malformed data.
 
-Decision Tree Training
+### Feature Engineering
 
-The training layer consumes the processed dataset, splits features and target, trains the DecisionTreeClassifier, evaluates model metrics, logs the experiment to MLflow, and saves the trained model artifact.
+Feature engineering transforms raw transaction fields into fraud-oriented model signals.
 
-Design Benefits
-Separates data access from model training
-Makes preprocessing testable
-Reduces coupling between training and storage
-Improves reproducibility
-Prepares the project for future production data sources
-Makes the ML lifecycle easier to monitor, validate, and extend
-Current Implementation
+Current engineered features include:
+
+* Night transaction flag
+* New customer flag
+* Low transaction history indicator
+* High amount transaction indicator
+* Combined merchant/device risk score
+
+### Processed Dataset
+
+After cleaning, validation, and feature engineering, the processed dataset is saved as a reproducible local artifact.
+
+This gives the training pipeline a clear separation between raw data and model-ready data.
+
+### Decision Tree Training
+
+The training layer consumes the processed dataset, splits features and target, trains the `DecisionTreeClassifier`, evaluates model metrics, logs the experiment to MLflow, and saves the trained model artifact.
+
+## Design Benefits
+
+* Separates data access from model training
+* Makes preprocessing testable
+* Reduces coupling between training and storage
+* Improves reproducibility
+* Prepares the project for future production data sources
+* Makes the ML lifecycle easier to monitor, validate, and extend
+
+## Current Implementation
+
+```text
 src/fraud_detection/data/
 ├── cleaning.py
 ├── pipeline.py
@@ -69,15 +108,19 @@ src/fraud_detection/data/
 ├── repository.py
 ├── schemas.py
 └── validation.py
+```
 
-Test Coverage
+## Test Coverage
 
 The data architecture is covered by unit tests for:
 
-Data cleaning
-DAO/repository behavior
-End-to-end training dataset pipeline
+* Data cleaning
+* DAO/repository behavior
+* End-to-end training dataset pipeline
+
+```text
 tests/unit/
 ├── test_data_cleaning.py
 ├── test_data_pipeline.py
 └── test_transaction_data_repository.py
+```
