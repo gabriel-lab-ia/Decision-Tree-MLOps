@@ -96,26 +96,6 @@ make validate
 make test
 make api
 ```
-
-API docs are available at `http://localhost:8000/docs`.
-
-Example single prediction:
-
-```bash
-curl -X POST http://localhost:8000/v1/predict \
-  -H 'Content-Type: application/json' \
-  -d '{"transaction_id":"txn_001","transaction_amount":750.0,"transaction_hour":2,"customer_age_days":14,"num_previous_transactions":1,"merchant_risk_score":0.82,"device_risk_score":0.74}'
-```
-
-Demo and smoke checks:
-
-```bash
-make demo
-make telemetry-smoke
-make monitoring-summary
-make explain
-```
-
 ## Model Artifact Governance
 
 Training writes:
